@@ -14,8 +14,18 @@
       return $this->items;
     }
 
-    public function getItem ($id) {
-      return $this->items -> produkt[$id];
+    public function checkId ($id) {
+      if ( $id >= 0 AND $id < count($this->items) )
+        return true;
+      return false;
+    }
+
+    public function getById ($id) {
+      if ( $this->checkId($id) )
+        return $this->items -> produkt[$id];
+      else
+        //return 0;
+        echo "Error: Index Out of Range";
     }
 
     // public function hasChild ($path) {
@@ -48,46 +58,31 @@
       return $allTagValues;
     }
 
-
-    // public function getByPath ( $path, $tagName, $tagValue ) {
-    //   $tmp = @$this->items -> xpath( $path . "[" . $tagName . "=" . $tagValue . "]" );
-    //   if ( $tmp != FALSE )
-    //     return $tmp;
-    //   else {
-    //     $childName = $this->items -> $path
-    //     //$tmp = 
-    //   }
-    //   //echo $path . "[" . $tagName . "=" . $tagValue . "]";
-    //   //return $tmp;
-    // }
-
     public function getByPath ( $path ) {
       return $this->items -> xpath($path);
     }
 
-    public function getItemsNamesByPath ( $path, $tagName, $tagValue ) {
-            $children = $this->items -> produkt -> $tagName -> children();
-            //$children = $children -> produkt -> $sortBy -> children();
+    public function getObjectsByXpath ( $path, $tagName, $tagValue ) {
 
-            if ( @count( $children ) > 0 ) {
-              $itemsInCategory = 
-                $this->items -> xpath("produkt/" . $tagName . "[" . $tagName . "='" . $tagValue . "']/parent::*");
-              //$itemsInCategory = 
-              //  @$items -> getByPath ( "produkt/" . $sortBy . "[" . $sortBy . "='" . $categories[$i] . "']/parent::*" );
-            }
-            else {
-              //echo "#### 1 #####<br>";
-              //$itemsInCategory = (@$items -> getByPath( "produkt[" . $sortBy . "='" . $categories[$i] . "']" );
-              $itemsInCategory = $this->items -> xpath( "produkt[" . $tagName . "='" . $tagValue . "']" );
-            }
+      /****** Ważne założenie: jeśli objekt ma dzieci, to dzieci muszą mieć tą samą nazwę znacznika  ******/
 
-            if ($itemsInCategory != NULL) {
-              $itemsNames = array();
-              foreach ($itemsInCategory as $item) {
-                $itemsNames[] = (string) $item -> nazwa;
-              }
-              return $itemsNames;
-            }
+      $children = $this->items -> produkt -> $tagName -> children();
+
+      if ( @count( $children ) > 0 ) {
+        $objects = 
+          $this->items -> xpath("produkt/" . $tagName . "[" . $tagName . "='" . $tagValue . "']/parent::*");
+      }
+      else {
+        $objects = $this->items -> xpath( "produkt[" . $tagName . "='" . $tagValue . "']" );
+      }
+
+      if ($objects != NULL) {
+        // $itemsNames = array();
+        // foreach ($objects as $item) {
+        //   $itemsNames[] = (string) $item -> nazwa;
+        // }
+        return $objects;
+      }
     }
 
 
@@ -95,25 +90,16 @@
 
 
   $items = new Items();
-  //echo $items->getItem(0) -> id;
+  
 
-
-
-  // function isElementInArray ($arr, $elem) {
-  //   $n = count($arr);
-  //   for ($i=0; $i<$n; $i++) {
-  //     if ($arr[$i] == $elem)
-  //       return true;
-  //   }
-  //   return false;
-  // }
-
-  //$items = simplexml_load_file("server/xml/oferta.xml");
-
-  if ( isset($_GET["id"]) )
-    $itemID = $_GET["id"];
+  if ( isset($_GET["id"]) ) {
+    if ( $items -> checkId( $_GET["id"] ) )
+      $itemID = (Integer) $_GET["id"];
+    else
+      $itemID = 0;
+  }
   else
-    $itemID = $items -> getItem(0) -> id;
+    $itemID = (Integer) $items -> getById(0) -> id;
 
   if ( isset($_GET["sort"]) )
     $sortBy = $_GET["sort"];
@@ -144,60 +130,55 @@
 
   <div class="col-sm-3" style="padding-left: 0">
 
+  <!--
     <div class="panel panel-primary">
-      <div class="panel-heading">Menu</div>
+      <div class="panel-heading">Grupuj według</b></div>
+      <div class="panel-body">
+
+        Sortuj
+
+
+      </div>
+    </div>
+   -->
+
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        Tkaniny - <b><?php echo $sortBy ?></b><br><br>ss
+
+        <select>
+        <?php
+          $i = 0;
+          $groups = array();
+          while ( $items -> checkId($i) ) {
+            $item = $items -> getById($i);
+            foreach ($item -> children() as $children) {
+              $tmp = (String) $children -> getName();
+              if ( in_array($tmp, $groups) )
+                $groups[] = $tmp;
+            }
+            $i++;
+          }
+          
+        ?>
+        </select>
+
+
+      </div>
       <div class="panel-body">
 
         <?php
-          // $categories[0] = (string)$items -> produkt[0] -> $sortBy;
-
-          // foreach ($items as $item) {
-
-          //   if ( count($item -> $sortBy -> children()) > 0 ) {
-          //     $subValueName = $item -> $sortBy -> children() -> getName();
-          //     foreach ($item -> $sortBy -> children() as $child) {
-          //       if ( isElementInArray($categories, $child) )
-          //         continue;
-          //       else
-          //         $categories[] = (string)$child;
-          //     }
-          //   }
-
-          //   else {
-          //     if ( isElementInArray($categories, $item -> $sortBy) )
-          //         continue;
-          //       else
-          //         $categories[] = (string)$item -> $sortBy;
-          //   }
-          // }
-
-
+        print_r($groups);
           $categories = $items -> getAllTagValues( $sortBy );
           sort ( $categories );
 
-          $n = count($categories);
-          for ($i=0; $i < $n; $i++) {
-            echo "<div class='well'>" . $categories[$i] . "</div>";
+          foreach ($categories as $category) {
+            echo "<div class='well'>" . $category . "</div>";
+            $itemsInCategory = $items -> getObjectsByXpath("produkt", $sortBy, $category);
 
-            // $children = $items -> getItemsObject();
-            // $children = $children -> produkt -> $sortBy -> children();
-
-            // if ( @count( $children ) > 0 ) {
-              
-            //   $itemsInCategory = 
-            //     @$items -> getByPath ( "produkt/" . $sortBy . "[" . $sortBy . "='" . $categories[$i] . "']/parent::*" );
-            // }
-            // else {
-            //   //echo "#### 1 #####<br>";
-            //   $itemsInCategory = @$items -> getByPath( "produkt[" . $sortBy . "='" . $categories[$i] . "']" );
-            // }
-
-            // foreach ($itemsInCategory as $item) {
-            //   echo $item -> nazwa . "<br>";
-            // }
-
-            $itemsNames = $items -> getItemsNamesByPath("produkt", $sortBy, $categories[$i]);
-            print_r($itemsNames);
+            foreach ($itemsInCategory as $item) {
+              echo $item -> nazwa . " [" . $item -> id . "]<br>";
+            }
 
           }
 
@@ -215,22 +196,32 @@
       <div class="panel-heading">Oferta</div>
       <div class="panel-body">  
         <?php
+ 
+          $currentItem = $items -> getById( $itemID );
 
-          //print_r($items);
+          //print_r($currentItem);
 
-          $currentItem = $items -> xpath("produkt[id=" . $itemID . "]");
-
-          foreach ($currentItem[0] as $key => $value) {
-            echo $key . ": " . $value . "<br>";
+          foreach ($currentItem as $item) {
+            //echo $key . ": " . $value . "<br>";
+            echo $item -> getName() . ": " . $item . "<br>";
           }
 
 
-          $test = "splot";
+          //print_r($items);
 
-          if ( count($items -> produkt[1] -> $test -> children()) > 0 )
-            echo "ma dzieci";
-          else
-            echo "nie ma dzieci";
+          // $currentItem = $items -> xpath("produkt[id=" . $itemID . "]");
+
+          // foreach ($currentItem[0] as $key => $value) {
+          //   echo $key . ": " . $value . "<br>";
+          // }
+
+
+          // $test = "splot";
+
+          // if ( count($items -> produkt[1] -> $test -> children()) > 0 )
+          //   echo "ma dzieci";
+          // else
+          //   echo "nie ma dzieci";
 
 
           // foreach ($items -> produkt[1] -> zastosowanie -> children() as $item) {
