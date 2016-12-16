@@ -45,14 +45,16 @@
 
           foreach ($children as $child) {
             $child = (string) $child;
-            if ( !in_array($child, $allTagValues) )
+            if ( !in_array($child, $allTagValues) AND $child != NULL )
               $allTagValues[] = $child;
           }
 
         }
-        else
-          if ( !in_array( ( (string) $item -> $tagName ), $allTagValues) )
-            $allTagValues[] = (string) $item -> $tagName;
+        else {
+          $value = (string) $item -> $tagName;
+          if ( !in_array( $value, $allTagValues) AND $value != NULL )
+            $allTagValues[] = $value;
+        }
       }
 
       return $allTagValues;
@@ -124,51 +126,52 @@
 </head>
 <body>
 
-  <?php include ("server/php/top.php"); ?>
+<?php include ("server/php/top.php"); ?>
 
 <div class="container">
 
   <div class="col-sm-3" style="padding-left: 0">
 
-  <!--
     <div class="panel panel-primary">
-      <div class="panel-heading">Grupuj według</b></div>
+      <div class="panel-heading">Tkaniny - <b><?php echo $sortBy ?></b></div>
       <div class="panel-body">
 
-        Sortuj
+        <div class="form-group">
+          <label for="sel1">Grupuj tkaniny według:</label>
+          <form action="" method="GET">
+            <select class="form-control" onchange="this.form.submit()" name="sort">
+            <?php
+              $i = 0;
+              $groups = array();
+              while ( $items -> checkId($i) ) {
+                $item = $items -> getById($i);
+                foreach ($item -> children() as $children) {
+                  $children = (String) $children -> getName();
+
+                  if ( !in_array($children, $groups) ) {
+                    $groups[] = $children;
+                  }
+                }
+                $i++;
+              }
+              
+              foreach ($groups as $name) {
+                if ($name == $sortBy)
+                  echo "<option value='$name' selected>$name</option>";
+                else
+                  echo "<option value='$name'>$name</option>";
+              }
+              
+            ?>
+            </select>
+          </form>
+        </div>
+
+        <hr/>
 
 
-      </div>
-    </div>
-   -->
-
-    <div class="panel panel-primary">
-      <div class="panel-heading">
-        Tkaniny - <b><?php echo $sortBy ?></b><br><br>ss
-
-        <select>
         <?php
-          $i = 0;
-          $groups = array();
-          while ( $items -> checkId($i) ) {
-            $item = $items -> getById($i);
-            foreach ($item -> children() as $children) {
-              $tmp = (String) $children -> getName();
-              if ( in_array($tmp, $groups) )
-                $groups[] = $tmp;
-            }
-            $i++;
-          }
-          
-        ?>
-        </select>
-
-
-      </div>
-      <div class="panel-body">
-
-        <?php
-        print_r($groups);
+        
           $categories = $items -> getAllTagValues( $sortBy );
           sort ( $categories );
 
@@ -177,7 +180,8 @@
             $itemsInCategory = $items -> getObjectsByXpath("produkt", $sortBy, $category);
 
             foreach ($itemsInCategory as $item) {
-              echo $item -> nazwa . " [" . $item -> id . "]<br>";
+              echo "<a href='oferta.php?sort=$sortBy&id=" . $item->id . "'>" . $item -> nazwa . "</a><br>";
+              //echo $item -> nazwa . " [" . $item -> id . "]<br>";
             }
 
           }
@@ -199,36 +203,9 @@
  
           $currentItem = $items -> getById( $itemID );
 
-          //print_r($currentItem);
-
           foreach ($currentItem as $item) {
-            //echo $key . ": " . $value . "<br>";
             echo $item -> getName() . ": " . $item . "<br>";
           }
-
-
-          //print_r($items);
-
-          // $currentItem = $items -> xpath("produkt[id=" . $itemID . "]");
-
-          // foreach ($currentItem[0] as $key => $value) {
-          //   echo $key . ": " . $value . "<br>";
-          // }
-
-
-          // $test = "splot";
-
-          // if ( count($items -> produkt[1] -> $test -> children()) > 0 )
-          //   echo "ma dzieci";
-          // else
-          //   echo "nie ma dzieci";
-
-
-          // foreach ($items -> produkt[1] -> zastosowanie -> children() as $item) {
-          //   echo $item;
-          //   echo "<br>";
-          // }
-
 
         ?>
       </div>
