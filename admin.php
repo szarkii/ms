@@ -6,28 +6,28 @@
 	include ($CMSPathPHP . "api.php");
 
 
-	// function addDataToNode ( $node, $dataNames, $dataContents ) {
-	// 	for ($i=0; $i < count( $dataNames ); $i++) {
-	// 		if ( $dataContents[$i] != "" )
-	// 			$node->addChild( $dataNames[$i], $dataContents[$i] );
-	// 	}
-	// }
-
 	function addDataToNode ( $node, $dataNames, $dataContents ) {
 		for ($i=0; $i < count( $dataNames ); $i++) {
-			if ( $dataContents[$i] == "" )
-				continue;
-
-			if ( is_array( $dataContents[$i] ) ) {
-				foreach ($dataContents[$i] as $value) {
-					$node->addChild( $dataNames[$i], $value );
-				}
-			}
-			else {
+			if ( $dataContents[$i] != "" )
 				$node->addChild( $dataNames[$i], $dataContents[$i] );
-			}
 		}
 	}
+
+	// function addDataToNode ( $node, $dataNames, $dataContents ) {
+	// 	for ($i=0; $i < count( $dataNames ); $i++) {
+	// 		if ( $dataContents[$i] == "" )
+	// 			continue;
+
+	// 		if ( is_array( $dataContents[$i] ) ) {
+	// 			foreach ($dataContents[$i] as $value) {
+	// 				$node->addChild( $dataNames[$i], $value );
+	// 			}
+	// 		}
+	// 		else {
+	// 			$node->addChild( $dataNames[$i], $dataContents[$i] );
+	// 		}
+	// 	}
+	// }
 
 
 	$contentFiles = simplexml_load_file( $CMSPathPHP . "contentFiles.xml" );
