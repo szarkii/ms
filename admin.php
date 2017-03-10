@@ -114,11 +114,7 @@
 
 					addDataToNode ( $template, $_POST["type"], $_POST["name"] );
 
-					//$contentFiles->asXML( $CMSPathPHP . "contentFiles.xml" );
-
-					echo "klucz: " . $_POST["key"] . "<br>" ;
 					$keyTag = $template->xpath("*[.='" . $_POST["key"] . "']");		// wszystkie znaczniki których dla każdej nazwy znacznika wartość jest równa nazwie klucza
-					print_r($keyTag);
 					$keyTag = $keyTag[0];
 					
 					$keyTag->addAttribute("key", "true");

@@ -45,7 +45,7 @@
 							<form action='' method='POST'>
 								<div class='form-block'>
 									<input type='hidden' name='mode' value='editTemplate' />
-
+									
 									<span style="margin-left: 30px">klucz</span>
 
 									<?php
@@ -62,12 +62,15 @@
 									// $template = $template[0]; // <-- wcześniej ta linijka była tu...
 
 									
-									$i2 = 0;
+
+									// wartości radio button 'ów są wpisywane przy zatwierdzaniu (poprzez JS):
 									?>
+
 									<?php foreach ($template as $field): ?>
 
-									<div style="display: block; padding: 8px;">
-										<input style='margin-right: 20px;' type='radio' name='key' value='<?php echo $i2++; ?>' <?php if ($field == $keyField) { echo " checked"; $isFirst = false; } ?> />
+									<div class="inputBlock" style="display: block; padding: 8px;">
+										<input style='margin-right: 20px;' type='radio' name='key' value='' <?php if ($field == $keyField) { echo " checked"; $isFirst = false; } ?> />
+
 
 										<select name='type[]'>
 											<?php
@@ -87,7 +90,7 @@
 									</div>
 									<?php endforeach; ?>
 
-									<button type='submit' style="display: inline-block; margin-top: 20px">Zatwierdź</button>
+									<button type='button' class="submitEditTemplate" style="display: inline-block; margin-top: 20px">Zatwierdź</button>
 									<label><input type='checkbox' class="form-activeBtns" /> Włącz możliwość usuwania pól</label>
 
 								</div>
