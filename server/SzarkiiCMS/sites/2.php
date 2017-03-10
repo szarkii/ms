@@ -46,17 +46,29 @@
 								<div class='form-block'>
 									<input type='hidden' name='mode' value='editTemplate' />
 
+									<span style="margin-left: 30px">klucz</span>
+
 									<?php
 									$template = $contentFile->template;
+									$template = $template[0];
 									if ( empty( $template->children() ) ) {
 										$template->addChild("text");
-									}					
-									$template = $template[0];
-									?>
+										$keyField = "";
+									}
+									else {
+										$keyField = $template->xpath("*[@key='true']");
+										$keyField = (string) $keyField[0];
+									}			
+									// $template = $template[0]; // <-- wcześniej ta linijka była tu...
 
+									
+									$i2 = 0;
+									?>
 									<?php foreach ($template as $field): ?>
 
 									<div style="display: block; padding: 8px;">
+										<input style='margin-right: 20px;' type='radio' name='key' value='<?php echo $i2++; ?>' <?php if ($field == $keyField) { echo " checked"; $isFirst = false; } ?> />
+
 										<select name='type[]'>
 											<?php
 											for ($i=0; $i < count($templateTags); $i++) {

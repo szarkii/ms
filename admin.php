@@ -114,10 +114,15 @@
 
 					addDataToNode ( $template, $_POST["type"], $_POST["name"] );
 
-					// for ($i=0; $i < count( $_POST["type"] ); $i++) {
-					// 	if ( $_POST["name"][$i] != "" )
-					// 		$template->addChild( $_POST["type"][$i], $_POST["name"][$i] );
-					// }
+					//$contentFiles->asXML( $CMSPathPHP . "contentFiles.xml" );
+
+					echo "klucz: " . $_POST["key"] . "<br>" ;
+					$keyTag = $template->xpath("*[.='" . $_POST["key"] . "']");		// wszystkie znaczniki których dla każdej nazwy znacznika wartość jest równa nazwie klucza
+					print_r($keyTag);
+					$keyTag = $keyTag[0];
+					
+					$keyTag->addAttribute("key", "true");
+
 
 					$contentFiles->asXML( $CMSPathPHP . "contentFiles.xml" );
 
@@ -225,7 +230,6 @@
 		}
 	}
 
-
 ?>
 
 <!DOCTYPE html>
@@ -251,7 +255,7 @@
 		<div class="col-sm-3" style="padding-left: 0">
 
 			<div class="panel panel-primary">
-				<div class="panel-heading">Ustawienia</b></div>
+				<div class="panel-heading">Ustawienia</div>
 				<div class="panel-body">
 					<b>Pliki Danych:</b>
 					<ul>
@@ -281,15 +285,18 @@
 			<div class="panel panel-primary">
 				<div class="panel-heading"><b>Wybierz plik do edycji</b></div>
 				<div class="panel-body">
-					<ul>
+
+					<input type="text" class="searchHideInput" placeholder="wyszukaj plik..." style="margin-left: 0" />
+					<div style="position: relative;">
 						<?php
 
 						foreach ( $contentFiles as $file ) {
-							echo "<li><a href='?site=" . $_GET["site"] . "&file=" . $file->name . "'>" . $file->name . "</a></li>";
+							echo "<a class='searchPosition' href='?site=" . $_GET["site"] . "&file=" . $file->name . "'>" . $file->name . "</a>";
 						}
 
 						?>
-					</ul>
+					</div>
+
 				</div>
 			</div>
 

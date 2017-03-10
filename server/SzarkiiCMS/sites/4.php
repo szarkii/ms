@@ -1,6 +1,10 @@
 <?php
 if ( isset( $_GET["file"] ) )
-	$file = simplexml_load_file( $_SERVER['DOCUMENT_ROOT'] . "/" . $contentFile->path . "/" . $contentFile->name . ".xml" ); 
+	$file = simplexml_load_file( $_SERVER['DOCUMENT_ROOT'] . "/" . $contentFile->path . "/" . $contentFile->name . ".xml" );
+
+$keyTag = $contentFile -> xpath( "template/*[@key='true']" );
+$keyTag = $keyTag[0];
+
 ?>
 
 <?php if ( isset( $_GET["file"] ) AND isset( $_GET["eid"] ) ): ?>
@@ -20,7 +24,7 @@ if ( isset( $_GET["file"] ) )
 
 
 				Nazwa edytowanego pliku: <b><?php echo $_GET["file"]; ?></b><br>
-				Klucz edytowanego elementu: <b><?php echo $entry->nazwa . " [id: " . $entry->id . "]"; ?></b><br><br>
+				Klucz edytowanego elementu: <b><?php echo $entry->$keyTag . " [id: " . $entry->id . "]"; ?></b><br><br>
 
 				<ul class="nav nav-tabs">
 					<li class="active"><a data-toggle="tab" href="#home">Edycja elementu</a></li>
@@ -82,17 +86,17 @@ if ( isset( $_GET["file"] ) )
 		<div class="panel panel-primary">
 			<div class="panel-heading"><b>Wybierz element do edycji</b></div>
 			<div class="panel-body">
-				<ul>
+				<input type="text" class="searchHideInput" placeholder="wyszukaj element..." style="margin-left: 0" />
+				<div>
 					<?php
-					//print_r($file);
 
 					foreach ( $file as $entry ) {
-						echo "<li><a href='?site=" . $_GET["site"] . "&file=" . $_GET["file"] . "&eid=" . $entry->id . "'>";
-						echo $entry->nazwa . "</a></li>";
+						echo "<a class='searchPosition' href='?site=" . $_GET["site"] . "&file=" . $_GET["file"] . "&eid=" . $entry->id . "'>";
+						echo $entry->$keyTag . "</a>";
 					}
 
 					?>
-				</ul>
+				</div>
 			</div>
 		</div>
 <?php endif ?>
